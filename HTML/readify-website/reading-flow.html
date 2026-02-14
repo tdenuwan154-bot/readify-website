@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reading Flow - Readify</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        header {
+            background: rgba(255,255,255,0.1);
+            padding: 1rem 0;
+            backdrop-filter: blur(10px);
+        }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+        }
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+        }
+        .nav-links a:hover { background: rgba(255,255,255,0.2); }
+        h1 { text-align: center; padding: 3rem 0; font-size: 3rem; }
+        
+        .card {
+            background: rgba(255,255,255,0.1);
+            padding: 2rem;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            margin: 2rem 0;
+        }
+        
+        .sounds-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .sound-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .sound-btn:hover {
+            transform: scale(1.05);
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .sound-btn.active {
+            background: #4a90e2;
+            border: 2px solid white;
+        }
+        
+        .timer-display {
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .timer {
+            font-size: 5rem;
+            font-weight: bold;
+            font-family: monospace;
+            margin: 1rem 0;
+        }
+        
+        .timer-controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+        
+        .btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        
+        .preset-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+        
+        .preset-btn:hover { background: rgba(255,255,255,0.3); }
+        
+        .completed-book {
+            background: rgba(255,255,255,0.1);
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .stat-item {
+            background: rgba(255,255,255,0.2);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        
+        .add-book-form {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .add-book-form input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 3rem 0;
+            margin-top: 4rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .sounds-grid { grid-template-columns: repeat(2, 1fr); }
+            .add-book-form { flex-direction: column; }
+            .stats-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <a href="index.html" class="logo">📚 Readify</a>
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="explorer.html">Explorer</a></li>
+                    <li><a href="tracker.html">Tracker</a></li>
+                    <li><a href="recommender.html">Recommender</a></li>
+                    <li><a href="reading-flow.html" style="background: rgba(255,255,255,0.2);">Reading Flow</a></li>
+                    <li><a href="feedback.html">Feedback</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1>🔊 Reading Flow</h1>
+        
+        <!-- Ambient Sounds -->
+        <div class="card">
+            <h2 style="margin-bottom: 1.5rem;">🎵 Ambient Sounds</h2>
+            <div class="sounds-grid" id="soundsGrid">
+                <button class="sound-btn" onclick="toggleSound('rain')">🌧️ Rain</button>
+                <button class="sound-btn" onclick="toggleSound('fire')">🔥 Fireplace</button>
+                <button class="sound-btn" onclick="toggleSound('forest')">🌲 Forest</button>
+                <button class="sound-btn" onclick="toggleSound('coffee')">☕ Coffee Shop</button>
+                <button class="sound-btn" onclick="toggleSound('ocean')">🌊 Ocean Waves</button>
+            </div>
+            <div style="text-align: center;">
+                <button class="btn" onclick="playAllSounds()">▶ Play All</button>
+                <button class="btn" onclick="stopAllSounds()">⏹ Stop All</button>
+            </div>
+            <p style="text-align: center; margin-top: 1rem;" id="activeSoundText">No sounds playing</p>
+        </div>
+        
+        <!-- Reading Timer -->
+        <div class="card">
+            <h2 style="margin-bottom: 1.5rem;">⏱️ Reading Timer</h2>
+            <div class="timer-display">
+                <div class="timer" id="timer">25:00</div>
+                <div class="timer-controls">
+                    <button class="btn" onclick="startTimer()">▶ Start</button>
+                    <button class="btn" onclick="pauseTimer()">⏸ Pause</button>
+                    <button class="btn" onclick="resetTimer()">↻ Reset</button>
+                </div>
+                <div>
+                    <span class="preset-btn" onclick="setTimer(15)">15 min</span>
+                    <span class="preset-btn" onclick="setTimer(25)">25 min</span>
+                    <span class="preset-btn" onclick="setTimer(45)">45 min</span>
+                    <span class="preset-btn" onclick="setTimer(60)">60 min</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Completed Books -->
+        <div class="card">
+            <h2 style="margin-bottom: 1.5rem;">📚 Completed Books</h2>
+            
+            <div class="add-book-form">
+                <input type="text" id="bookTitle" placeholder="Book title">
+                <input type="text" id="bookAuthor" placeholder="Author">
+                <button class="btn" onclick="addCompletedBook()">Add Book</button>
+            </div>
+            
+            <div id="completedBooksList"></div>
+            
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalBooks">0</div>
+                    <div>Total Books</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="thisMonth">0</div>
+                    <div>This Month</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="streak">0</div>
+                    <div>Day Streak</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>© 2024 Readify - Create your perfect reading environment</p>
+        </div>
+    </footer>
+
+    <script>
+        // ===== AMBIENT SOUNDS =====
+        let activeSounds = [];
+        
+        function toggleSound(sound) {
+            const btn = event.target;
+            btn.classList.toggle('active');
+            
+            if (btn.classList.contains('active')) {
+                activeSounds.push(sound);
+            } else {
+                activeSounds = activeSounds.filter(s => s !== sound);
+            }
+            
+            updateSoundText();
+        }
+        
+        function playAllSounds() {
+            document.querySelectorAll('.sound-btn').forEach(btn => {
+                btn.classList.add('active');
+                activeSounds.push(btn.textContent.split(' ')[1]?.toLowerCase() || 'sound');
+            });
+            updateSoundText();
+        }
+        
+        function stopAllSounds() {
+            document.querySelectorAll('.sound-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            activeSounds = [];
+            updateSoundText();
+        }
+        
+        function updateSoundText() {
+            const text = document.getElementById('activeSoundText');
+            if (activeSounds.length === 0) {
+                text.textContent = 'No sounds playing';
+            } else {
+                text.textContent = `Playing: ${activeSounds.join(', ')}`;
+            }
+        }
+
+        // ===== TIMER =====
+        let timerInterval;
+        let timerSeconds = 25 * 60;
+        let timerRunning = false;
+        
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timerSeconds / 60);
+            const seconds = timerSeconds % 60;
+            document.getElementById('timer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
+        function startTimer() {
+            if (timerRunning) return;
+            timerRunning = true;
+            
+            timerInterval = setInterval(() => {
+                if (timerSeconds > 0) {
+                    timerSeconds--;
+                    updateTimerDisplay();
+                    
+                    if (timerSeconds === 0) {
+                        clearInterval(timerInterval);
+                        timerRunning = false;
+                        alert("⏰ Time's up! Great reading session!");
+                    }
+                }
+            }, 1000);
+        }
+        
+        function pauseTimer() {
+            clearInterval(timerInterval);
+            timerRunning = false;
+        }
+        
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timerRunning = false;
+            timerSeconds = 25 * 60;
+            updateTimerDisplay();
+        }
+        
+        function setTimer(minutes) {
+            clearInterval(timerInterval);
+            timerRunning = false;
+            timerSeconds = minutes * 60;
+            updateTimerDisplay();
+        }
+
+        // ===== COMPLETED BOOKS =====
+        function addCompletedBook() {
+            const title = document.getElementById('bookTitle').value;
+            const author = document.getElementById('bookAuthor').value;
+            
+            if (!title || !author) {
+                alert("Please enter both title and author");
+                return;
+            }
+            
+            let books = JSON.parse(localStorage.getItem('completedBooks')) || [];
+            books.push({
+                title,
+                author,
+                date: new Date().toLocaleDateString(),
+                timestamp: new Date().toISOString()
+            });
+            
+            localStorage.setItem('completedBooks', JSON.stringify(books));
+            
+            document.getElementById('bookTitle').value = '';
+            document.getElementById('bookAuthor').value = '';
+            
+            displayCompletedBooks();
+            updateStats();
+        }
+        
+        function displayCompletedBooks() {
+            const books = JSON.parse(localStorage.getItem('completedBooks')) || [];
+            const container = document.getElementById('completedBooksList');
+            
+            if (books.length === 0) {
+                container.innerHTML = '<p style="text-align: center; opacity: 0.7;">No completed books yet</p>';
+                return;
+            }
+            
+            let html = '';
+            books.reverse().forEach((book, index) => {
+                html += `
+                    <div class="completed-book">
+                        <div>
+                            <strong>${book.title}</strong> by ${book.author}<br>
+                            <small>Completed: ${book.date}</small>
+                        </div>
+                        <button class="btn" onclick="deleteBook(${index})" style="background: #ff6b6b; color: white;">Delete</button>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        function deleteBook(index) {
+            let books = JSON.parse(localStorage.getItem('completedBooks')) || [];
+            books.splice(index, 1);
+            localStorage.setItem('completedBooks', JSON.stringify(books));
+            displayCompletedBooks();
+            updateStats();
+        }
+        
+        function updateStats() {
+            const books = JSON.parse(localStorage.getItem('completedBooks')) || [];
+            
+            // Total books
+            document.getElementById('totalBooks').textContent = books.length;
+            
+            // Books this month
+            const currentMonth = new Date().getMonth();
+            const thisMonthCount = books.filter(book => {
+                const bookDate = new Date(book.timestamp);
+                return bookDate.getMonth() === currentMonth;
+            }).length;
+            document.getElementById('thisMonth').textContent = thisMonthCount;
+            
+            // Streak (simple version)
+            document.getElementById('streak').textContent = Math.min(books.length, 30);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateTimerDisplay();
+            displayCompletedBooks();
+            updateStats();
+        });
+    </script>
+</body>
+</html>

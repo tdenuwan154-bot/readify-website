@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Progress Tracker - Readify</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        header {
+            background: rgba(255,255,255,0.1);
+            padding: 1rem 0;
+            backdrop-filter: blur(10px);
+        }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+        }
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+        }
+        .nav-links a:hover { background: rgba(255,255,255,0.2); }
+        h1 { text-align: center; padding: 3rem 0; font-size: 3rem; }
+        
+        .tracker-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .card {
+            background: rgba(255,255,255,0.1);
+            padding: 2rem;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-right: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        
+        .progress-bar {
+            height: 30px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4a90e2, #50c878);
+            width: 0%;
+            transition: width 1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .result-item {
+            background: rgba(255,255,255,0.1);
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 8px;
+        }
+        
+        .saved-item {
+            background: rgba(255,255,255,0.1);
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 3rem 0;
+            margin-top: 4rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .tracker-container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <a href="index.html" class="logo">📚 Readify</a>
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="explorer.html">Explorer</a></li>
+                    <li><a href="tracker.html" style="background: rgba(255,255,255,0.2);">Tracker</a></li>
+                    <li><a href="recommender.html">Recommender</a></li>
+                    <li><a href="reading-flow.html">Reading Flow</a></li>
+                    <li><a href="feedback.html">Feedback</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1>📊 Reading Progress Tracker</h1>
+        
+        <div class="tracker-container">
+            <!-- Input Form -->
+            <div class="card">
+                <h2 style="margin-bottom: 1.5rem;">Enter Your Reading</h2>
+                
+                <div class="form-group">
+                    <label>Book Title</label>
+                    <input type="text" id="bookTitle" class="form-control" placeholder="e.g., The Great Gatsby">
+                </div>
+                
+                <div class="form-group">
+                    <label>Total Pages</label>
+                    <input type="number" id="totalPages" class="form-control" placeholder="300">
+                </div>
+                
+                <div class="form-group">
+                    <label>Pages Read</label>
+                    <input type="number" id="pagesRead" class="form-control" placeholder="150">
+                </div>
+                
+                <div class="form-group">
+                    <label>Daily Reading Speed (pages/day)</label>
+                    <input type="number" id="readingSpeed" class="form-control" value="20">
+                </div>
+                
+                <button class="btn" onclick="calculateProgress()">Calculate Progress</button>
+                <button class="btn" onclick="saveProgress()">Save Progress</button>
+                <button class="btn" onclick="clearForm()">Clear</button>
+            </div>
+            
+            <!-- Results Display -->
+            <div class="card">
+                <h2 style="margin-bottom: 1.5rem;">Your Progress</h2>
+                
+                <div id="resultsArea">
+                    <p style="text-align: center; opacity: 0.7;">Enter details and click Calculate</p>
+                </div>
+                
+                <div class="progress-bar">
+                    <div id="progressFill" class="progress-fill" style="width: 0%;">0%</div>
+                </div>
+                
+                <div id="statsArea"></div>
+            </div>
+        </div>
+        
+        <!-- Saved Progress -->
+        <div class="card" style="margin-top: 2rem;">
+            <h2 style="margin-bottom: 1.5rem;">💾 Saved Reading Progress</h2>
+            <div id="savedProgress"></div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>© 2024 Readify - Track your reading journey</p>
+        </div>
+    </footer>
+
+    <script>
+        let currentProgress = null;
+
+        // Calculate progress
+        function calculateProgress() {
+            const title = document.getElementById('bookTitle').value || "Untitled Book";
+            const total = parseInt(document.getElementById('totalPages').value);
+            const read = parseInt(document.getElementById('pagesRead').value);
+            const speed = parseInt(document.getElementById('readingSpeed').value) || 20;
+
+            if (!total || total <= 0) {
+                alert("Please enter valid total pages");
+                return;
+            }
+
+            if (read < 0 || read > total) {
+                alert("Pages read must be between 0 and total pages");
+                return;
+            }
+
+            const percentage = Math.round((read / total) * 100);
+            const remaining = total - read;
+            const daysLeft = Math.ceil(remaining / speed);
+            
+            const finishDate = new Date();
+            finishDate.setDate(finishDate.getDate() + daysLeft);
+
+            currentProgress = {
+                title, total, read, speed, percentage, remaining, daysLeft,
+                finishDate: finishDate.toLocaleDateString(),
+                timestamp: new Date().toLocaleString()
+            };
+
+            // Update display
+            document.getElementById('resultsArea').innerHTML = `
+                <div class="result-item">
+                    <strong>${title}</strong><br>
+                    ${read} of ${total} pages read
+                </div>
+            `;
+
+            document.getElementById('progressFill').style.width = percentage + '%';
+            document.getElementById('progressFill').textContent = percentage + '%';
+
+            document.getElementById('statsArea').innerHTML = `
+                <div class="result-item">📈 ${percentage}% Complete</div>
+                <div class="result-item">📖 ${remaining} pages left</div>
+                <div class="result-item">⏱️ ${daysLeft} days to finish</div>
+                <div class="result-item">📅 Finish by: ${finishDate.toLocaleDateString()}</div>
+            `;
+        }
+
+        // Save progress
+        function saveProgress() {
+            if (!currentProgress) {
+                alert("Please calculate progress first");
+                return;
+            }
+
+            let saved = JSON.parse(localStorage.getItem('readingProgress')) || [];
+            saved.push(currentProgress);
+            localStorage.setItem('readingProgress', JSON.stringify(saved));
+            
+            alert("Progress saved!");
+            displaySavedProgress();
+        }
+
+        // Display saved progress
+        function displaySavedProgress() {
+            const saved = JSON.parse(localStorage.getItem('readingProgress')) || [];
+            const container = document.getElementById('savedProgress');
+            
+            if (saved.length === 0) {
+                container.innerHTML = '<p style="text-align: center; opacity: 0.7;">No saved progress yet</p>';
+                return;
+            }
+
+            let html = '';
+            saved.reverse().forEach((item, index) => {
+                html += `
+                    <div class="saved-item">
+                        <div>
+                            <strong>${item.title}</strong><br>
+                            ${item.read}/${item.total} pages (${item.percentage}%)<br>
+                            <small>${item.timestamp}</small>
+                        </div>
+                        <div>
+                            <button class="btn" onclick="loadProgress(${saved.length - 1 - index})" style="margin-right: 5px;">Load</button>
+                            <button class="btn" onclick="deleteProgress(${saved.length - 1 - index})">Delete</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // Load saved progress
+        function loadProgress(index) {
+            const saved = JSON.parse(localStorage.getItem('readingProgress')) || [];
+            const item = saved[index];
+            
+            if (item) {
+                document.getElementById('bookTitle').value = item.title;
+                document.getElementById('totalPages').value = item.total;
+                document.getElementById('pagesRead').value = item.read;
+                document.getElementById('readingSpeed').value = item.speed;
+                calculateProgress();
+            }
+        }
+
+        // Delete progress
+        function deleteProgress(index) {
+            if (confirm("Delete this progress?")) {
+                let saved = JSON.parse(localStorage.getItem('readingProgress')) || [];
+                saved.splice(index, 1);
+                localStorage.setItem('readingProgress', JSON.stringify(saved));
+                displaySavedProgress();
+            }
+        }
+
+        // Clear form
+        function clearForm() {
+            document.getElementById('bookTitle').value = '';
+            document.getElementById('totalPages').value = '';
+            document.getElementById('pagesRead').value = '';
+            document.getElementById('readingSpeed').value = '20';
+            document.getElementById('resultsArea').innerHTML = '<p style="text-align: center; opacity: 0.7;">Enter details and click Calculate</p>';
+            document.getElementById('statsArea').innerHTML = '';
+            document.getElementById('progressFill').style.width = '0%';
+            document.getElementById('progressFill').textContent = '0%';
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', displaySavedProgress);
+    </script>
+</body>
+</html>

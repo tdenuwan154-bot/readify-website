@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Readify - Book Discovery Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem 0;
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .hero {
+            text-align: center;
+            padding: 6rem 0;
+            color: white;
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .btn {
+            background: white;
+            color: #667eea;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 4rem 0;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            color: white;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .quote-container {
+            background: rgba(255,255,255,0.1);
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 2rem 0;
+            color: white;
+        }
+        
+        .quote {
+            font-size: 1.3rem;
+            font-style: italic;
+            margin-bottom: 0.5rem;
+        }
+        
+        .author {
+            text-align: right;
+            opacity: 0.8;
+        }
+        
+        .author-card {
+            background: rgba(255,255,255,0.1);
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 2rem 0;
+            color: white;
+            text-align: center;
+        }
+        
+        .newsletter-form {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .newsletter-form input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 3rem 0;
+            color: white;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            margin-top: 4rem;
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .features { grid-template-columns: 1fr; }
+            .newsletter-form { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <a href="index.html" class="logo">📚 Readify</a>
+                <ul class="nav-links">
+                    <li><a href="index.html" style="background: rgba(255,255,255,0.2);">Home</a></li>
+                    <li><a href="explorer.html">Book Explorer</a></li>
+                    <li><a href="tracker.html">Progress Tracker</a></li>
+                    <li><a href="recommender.html">Book Recommender</a></li>
+                    <li><a href="reading-flow.html">Reading Flow</a></li>
+                    <li><a href="feedback.html">Feedback</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Discover Your Next Favorite Book</h1>
+            <p>Join thousands of readers in exploring amazing stories</p>
+            <a href="explorer.html" class="btn">Start Reading Journey</a>
+        </div>
+    </section>
+
+    <div class="container">
+        <!-- Auto-rotating Quotes -->
+        <div class="quote-container" id="quoteContainer">
+            <div class="quote" id="quoteText">"A reader lives a thousand lives before he dies."</div>
+            <div class="author" id="quoteAuthor">- George R.R. Martin</div>
+        </div>
+
+        <!-- Author of the Day -->
+        <div class="author-card" id="authorOfDay">
+            <h3 id="authorName">Author of the Day: J.K. Rowling</h3>
+            <p id="authorBio">British author best known for writing the Harry Potter series.</p>
+        </div>
+
+        <!-- Features -->
+        <h2 style="color: white; text-align: center; margin: 3rem 0;">Our Features</h2>
+        <div class="features">
+            <a href="explorer.html" class="feature-card">
+                <h3>📖 Book Explorer</h3>
+                <p>Search and browse through hundreds of books by genre, author, or title.</p>
+            </a>
+            <a href="tracker.html" class="feature-card">
+                <h3>📊 Progress Tracker</h3>
+                <p>Track your reading progress with visual progress bars and estimates.</p>
+            </a>
+            <a href="recommender.html" class="feature-card">
+                <h3>🎲 Book Recommender</h3>
+                <p>Get random book recommendations based on your preferences.</p>
+            </a>
+            <a href="reading-flow.html" class="feature-card">
+                <h3>🔊 Reading Flow</h3>
+                <p>Ambient sounds and reading timer for focused sessions.</p>
+            </a>
+            <a href="feedback.html" class="feature-card">
+                <h3>📝 Feedback</h3>
+                <p>Share your feedback and read FAQs.</p>
+            </a>
+        </div>
+
+        <!-- Newsletter -->
+        <div class="author-card">
+            <h3>📧 Subscribe to Newsletter</h3>
+            <form class="newsletter-form" id="newsletterForm">
+                <input type="email" id="newsletterEmail" placeholder="Enter your email" required>
+                <button type="submit" class="btn">Subscribe</button>
+            </form>
+            <p id="newsletterMessage" style="margin-top: 1rem;"></p>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>© 2024 Readify - COMP40053 Assignment</p>
+        </div>
+    </footer>
+
+    <script>
+        // Auto-rotating quotes
+        const quotes = [
+            { text: "A reader lives a thousand lives before he dies.", author: "George R.R. Martin" },
+            { text: "The more that you read, the more things you will know.", author: "Dr. Seuss" },
+            { text: "That's the thing about books. They let you travel without moving your feet.", author: "Jhumpa Lahiri" }
+        ];
+        
+        let quoteIndex = 0;
+        setInterval(() => {
+            quoteIndex = (quoteIndex + 1) % quotes.length;
+            document.getElementById('quoteText').textContent = quotes[quoteIndex].text;
+            document.getElementById('quoteAuthor').textContent = `- ${quotes[quoteIndex].author}`;
+        }, 5000);
+
+        // Author of the Day (changes based on date)
+        const authors = [
+            { name: "J.K. Rowling", bio: "British author best known for writing the Harry Potter series." },
+            { name: "George Orwell", bio: "English novelist known for 1984 and Animal Farm." },
+            { name: "Jane Austen", bio: "English novelist known for Pride and Prejudice." }
+        ];
+        
+        const today = new Date().getDate();
+        const authorIndex = today % authors.length;
+        document.getElementById('authorName').textContent = `Author of the Day: ${authors[authorIndex].name}`;
+        document.getElementById('authorBio').textContent = authors[authorIndex].bio;
+
+        // Newsletter subscription
+        document.getElementById('newsletterForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('newsletterEmail').value;
+            
+            // Save to localStorage
+            let subscribers = JSON.parse(localStorage.getItem('newsletter')) || [];
+            subscribers.push({ email, date: new Date().toLocaleString() });
+            localStorage.setItem('newsletter', JSON.stringify(subscribers));
+            
+            document.getElementById('newsletterMessage').textContent = "✓ Subscribed successfully!";
+            document.getElementById('newsletterMessage').style.color = "#50c878";
+            this.reset();
+        });
+    </script>
+</body>
+</html>

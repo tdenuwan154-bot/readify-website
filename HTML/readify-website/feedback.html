@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback - Readify</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        header {
+            background: rgba(255,255,255,0.1);
+            padding: 1rem 0;
+            backdrop-filter: blur(10px);
+        }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+        }
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+        }
+        .nav-links a:hover { background: rgba(255,255,255,0.2); }
+        h1 { text-align: center; padding: 3rem 0; font-size: 3rem; }
+        
+        .card {
+            background: rgba(255,255,255,0.1);
+            padding: 2rem;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            margin: 2rem 0;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-right: 1rem;
+            font-size: 1rem;
+        }
+        
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        
+        .error {
+            color: #ff6b6b;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        .success {
+            color: #50c878;
+            font-size: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .faq-item {
+            margin-bottom: 1rem;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+        }
+        
+        .faq-question {
+            padding: 1rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .faq-question:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .faq-answer {
+            padding: 0 1rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        
+        .faq-answer.show {
+            max-height: 100px;
+            padding: 1rem;
+        }
+        
+        .feedback-item {
+            background: rgba(255,255,255,0.1);
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 8px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 3rem 0;
+            margin-top: 4rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <a href="index.html" class="logo">📚 Readify</a>
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="explorer.html">Explorer</a></li>
+                    <li><a href="tracker.html">Tracker</a></li>
+                    <li><a href="recommender.html">Recommender</a></li>
+                    <li><a href="reading-flow.html">Reading Flow</a></li>
+                    <li><a href="feedback.html" style="background: rgba(255,255,255,0.2);">Feedback</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1>📝 Feedback & FAQ</h1>
+        
+        <!-- Feedback Form -->
+        <div class="card">
+            <h2 style="margin-bottom: 1.5rem;">Send Us Your Feedback</h2>
+            
+            <form id="feedbackForm" onsubmit="submitFeedback(event)">
+                <div class="form-group">
+                    <label>Name *</label>
+                    <input type="text" id="name" class="form-control" required>
+                    <div id="nameError" class="error"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" id="email" class="form-control" required>
+                    <div id="emailError" class="error"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Message *</label>
+                    <textarea id="message" class="form-control" rows="5" required></textarea>
+                    <div id="messageError" class="error"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Rating</label>
+                    <div style="font-size: 2rem;" id="starRating">
+                        <span onclick="setRating(1)">☆</span>
+                        <span onclick="setRating(2)">☆</span>
+                        <span onclick="setRating(3)">☆</span>
+                        <span onclick="setRating(4)">☆</span>
+                        <span onclick="setRating(5)">☆</span>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn">Submit Feedback</button>
+                <button type="button" class="btn" onclick="clearForm()">Clear</button>
+            </form>
+            
+            <div id="successMessage" class="success"></div>
+        </div>
+        
+        <!-- FAQ Accordion -->
+        <div class="card">
+            <h2 style="margin-bottom: 1.5rem;">Frequently Asked Questions</h2>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(1)">
+                    <span>How does the book recommender work?</span>
+                    <span id="faq1">▼</span>
+                </div>
+                <div class="faq-answer" id="answer1">
+                    The book recommender filters books based on your selected genre and length preferences, then randomly selects a book from the filtered list.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(2)">
+                    <span>Is my reading progress saved?</span>
+                    <span id="faq2">▼</span>
+                </div>
+                <div class="faq-answer" id="answer2">
+                    Yes! All your progress is saved in your browser's local storage. Your data stays on your device and persists even after closing the browser.
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(3)">
+                    <span>Can I use Readify offline?</span>
+                    <span id="faq3">▼</span>
+                </div>
+                <div class="faq-answer" id="answer3">
+                    Yes! Once you've visited the pages, most features work offline using your browser's cache.
+                </div>
+            </div>
+        </div>
+        
+        <!-- Previous Feedback -->
+        <div class="card">
+            <h2 style="margin-bottom: 1.5rem;">Previous Feedback</h2>
+            <div id="feedbackHistory"></div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>© 2024 Readify - We value your feedback</p>
+        </div>
+    </footer>
+
+    <script>
+        let currentRating = 0;
+
+        // Set rating
+        function setRating(rating) {
+            currentRating = rating;
+            const stars = document.querySelectorAll('#starRating span');
+            for (let i = 0; i < stars.length; i++) {
+                stars[i].textContent = i < rating ? '★' : '☆';
+            }
+        }
+
+        // Validate email
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        // Submit feedback
+        function submitFeedback(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const message = document.getElementById('message').value.trim();
+            
+            // Clear previous errors
+            document.getElementById('nameError').textContent = '';
+            document.getElementById('emailError').textContent = '';
+            document.getElementById('messageError').textContent = '';
+            
+            let isValid = true;
+            
+            // Validate name
+            if (!name) {
+                document.getElementById('nameError').textContent = 'Name is required';
+                isValid = false;
+            }
+            
+            // Validate email
+            if (!email) {
+                document.getElementById('emailError').textContent = 'Email is required';
+                isValid = false;
+            } else if (!isValidEmail(email)) {
+                document.getElementById('emailError').textContent = 'Invalid email format';
+                isValid = false;
+            }
+            
+            // Validate message
+            if (!message) {
+                document.getElementById('messageError').textContent = 'Message is required';
+                isValid = false;
+            } else if (message.length < 10) {
+                document.getElementById('messageError').textContent = 'Message must be at least 10 characters';
+                isValid = false;
+            }
+            
+            if (!isValid) return;
+            
+            // Save feedback
+            const feedback = {
+                name,
+                email,
+                message,
+                rating: currentRating,
+                date: new Date().toLocaleString()
+            };
+            
+            let history = JSON.parse(localStorage.getItem('feedbackHistory')) || [];
+            history.push(feedback);
+            localStorage.setItem('feedbackHistory', JSON.stringify(history));
+            
+            // Show success
+            document.getElementById('successMessage').textContent = '✓ Thank you for your feedback!';
+            
+            // Clear form
+            document.getElementById('name').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('message').value = '';
+            setRating(0);
+            
+            // Display updated history
+            displayFeedbackHistory();
+        }
+
+        // Clear form
+        function clearForm() {
+            document.getElementById('name').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('message').value = '';
+            setRating(0);
+            document.getElementById('nameError').textContent = '';
+            document.getElementById('emailError').textContent = '';
+            document.getElementById('messageError').textContent = '';
+        }
+
+        // Toggle FAQ
+        function toggleFAQ(id) {
+            const answer = document.getElementById(`answer${id}`);
+            const arrow = document.getElementById(`faq${id}`);
+            
+            answer.classList.toggle('show');
+            arrow.textContent = answer.classList.contains('show') ? '▲' : '▼';
+        }
+
+        // Display feedback history
+        function displayFeedbackHistory() {
+            const history = JSON.parse(localStorage.getItem('feedbackHistory')) || [];
+            const container = document.getElementById('feedbackHistory');
+            
+            if (history.length === 0) {
+                container.innerHTML = '<p style="text-align: center; opacity: 0.7;">No feedback submitted yet</p>';
+                return;
+            }
+            
+            let html = '';
+            history.reverse().slice(0, 5).forEach(item => {
+                html += `
+                    <div class="feedback-item">
+                        <strong>${item.name}</strong> - ${item.date}<br>
+                        ${'★'.repeat(item.rating)}${'☆'.repeat(5 - item.rating)}<br>
+                        ${item.message}
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', displayFeedbackHistory);
+    </script>
+</body>
+</html>

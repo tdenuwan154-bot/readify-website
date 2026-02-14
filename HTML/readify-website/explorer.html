@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Explorer - Readify</title>
+    <style>
+        /* ===== BASE STYLES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* ===== NAVIGATION ===== */
+        header {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem 0;
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        /* ===== BOOK EXPLORER STYLES ===== */
+        .explorer-header {
+            text-align: center;
+            padding: 3rem 0;
+        }
+        
+        .explorer-header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .explorer-header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* Country Filter */
+        .country-filter {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1rem 0 2rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .country-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+        
+        .country-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .country-btn.active {
+            background: white;
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .sri-lankan-badge {
+            display: inline-block;
+            background: linear-gradient(to right, #ffb400, #ef3340);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-left: 5px;
+            vertical-align: middle;
+        }
+        
+        /* Search and Filter */
+        .search-section {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .search-box input, .search-box select {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+        }
+        
+        .search-box button {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .search-box button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        /* Books Grid */
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .book-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .book-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        }
+        
+        .book-cover {
+            height: 200px;
+            background: linear-gradient(135deg, #4a90e2 0%, #50c878 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+        }
+        
+        .book-info {
+            padding: 1.5rem;
+        }
+        
+        .book-title {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+        
+        .book-author {
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .book-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .book-genre {
+            background: rgba(255,255,255,0.2);
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+        
+        .book-rating {
+            color: #FFD700;
+            font-weight: bold;
+        }
+        
+        /* Book Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1001;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .modal-content {
+            background: white;
+            color: #333;
+            padding: 2rem;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .modal-book-title {
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        
+        .modal-book-author {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Table Styles */
+        .reviews-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        
+        .reviews-table th, .reviews-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .reviews-table th {
+            background: #f8f9fa;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 3rem 0;
+            margin-top: 4rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .books-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-box {
+                flex-direction: column;
+            }
+            
+            .search-box input, .search-box select {
+                min-width: 100%;
+            }
+            
+            .explorer-header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .country-filter {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav>
+                <a href="index.html" class="logo">📚 Readify</a>
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="explorer.html" style="background: rgba(255,255,255,0.2);">Book Explorer</a></li>
+                    <li><a href="tracker.html">Progress Tracker</a></li>
+                    <li><a href="recommender.html">Recommender</a></li>
+                    <li><a href="reading-flow.html">Reading Flow</a></li>
+                    <li><a href="feedback.html">Feedback</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <div class="explorer-header">
+            <h1>Book Explorer</h1>
+            <p>Browse, search, and discover amazing books from various genres including Sri Lankan literature</p>
+        </div>
+        
+        <!-- Country Filter -->
+        <div class="country-filter">
+            <button class="country-btn active" onclick="filterByCountry('all')">All Books</button>
+            <button class="country-btn" onclick="filterByCountry('sri-lanka')">🇱🇰 Sri Lankan Books</button>
+            <button class="country-btn" onclick="filterByCountry('international')">🌍 International</button>
+        </div>
+        
+        <!-- Search and Filter Section -->
+        <div class="search-section">
+            <h2 style="margin-bottom: 1rem;">Find Your Next Read</h2>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search by title or author...">
+                <select id="genreFilter">
+                    <option value="">All Genres</option>
+                    <option value="fiction">Fiction</option>
+                    <option value="non-fiction">Non-Fiction</option>
+                    <option value="fantasy">Fantasy</option>
+                    <option value="sci-fi">Science Fiction</option>
+                    <option value="mystery">Mystery</option>
+                    <option value="romance">Romance</option>
+                    <option value="classic">Classic</option>
+                    <option value="historical">Historical</option>
+                    <option value="biography">Biography</option>
+                </select>
+                <button onclick="filterBooks()">Search</button>
+                <button onclick="clearFilters()" style="background: rgba(255,255,255,0.2); color: white;">Clear</button>
+            </div>
+            <p id="resultsCount">Showing 12 books</p>
+        </div>
+        
+        <!-- Books Grid -->
+        <div class="books-grid" id="booksGrid">
+            <!-- Books will be loaded here by JavaScript -->
+        </div>
+    </main>
+
+    <!-- Book Details Modal -->
+    <div class="modal" id="bookModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">×</span>
+            <div id="modalContent">
+                <!-- Modal content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>© 2024 Readify Book Explorer | COMP40053 Assignment</p>
+            <p style="margin-top: 1rem; opacity: 0.8;">Featuring international and Sri Lankan literature</p>
+        </div>
+    </footer>
+
+    <script>
+        // Book Data with Sri Lankan Books
+        const booksData = [
+            // ========== SRI LANKAN BOOKS ==========
+            {
+                id: 101,
+                title: "The Village in the Jungle",
+                author: "Leonard Woolf",
+                genre: "classic",
+                pages: 256,
+                rating: 4.5,
+                cover: "🌴",
+                color: "#795548",
+                country: "sri-lanka",
+                synopsis: "A classic novel about life in a remote Sri Lankan village, exploring themes of colonialism, poverty, and human nature.",
+                sequels: [],
+                prequels: [],
+                reviews: [
+                    { user: "Kamal P.", rating: 5, comment: "A masterpiece of Sri Lankan literature" },
+                    { user: "Nimali R.", rating: 4, comment: "Beautifully captures rural Sri Lanka" },
+                    { user: "David F.", rating: 4, comment: "Powerful social commentary" }
+                ]
+            },
+            {
+                id: 102,
+                title: "Funny Boy",
+                author: "Shyam Selvadurai",
+                genre: "fiction",
+                pages: 320,
+                rating: 4.7,
+                cover: "🌈",
+                color: "#9c27b0",
+                country: "sri-lanka",
+                synopsis: "A coming-of-age story about a Tamil boy growing up in Colombo during the civil war in Sri Lanka.",
+                sequels: [],
+                prequels: [],
+                reviews: [
+                    { user: "Samantha K.", rating: 5, comment: "Heartbreaking and beautiful" },
+                    { user: "Ravi J.", rating: 5, comment: "Important perspective on Sri Lanka's history" },
+                    { user: "Anjali M.", rating: 4, comment: "Well-written and moving" }
+                ]
+            },
+            {
+                id: 103,
+                title: "Reef",
+                author: "Romesh Gunesekera",
+                genre: "fiction",
+                pages: 240,
+                rating: 4.3,
+                cover: "🐠",
+                color: "#2196F3",
+                country: "sri-lanka",
+                synopsis: "A novel that follows a young man's journey from rural Sri Lanka to London, exploring themes of memory and identity.",
+                sequels: [],
+                prequels: [],
+                reviews: [
+                    { user: "Lakshmi D.", rating: 4, comment: "Beautiful prose about Sri Lankan diaspora" },
+                    { user: "Gihan P.", rating: 5, comment: "Shortlisted for Booker Prize - excellent!" },
+                    { user: "Susan T.", rating: 4, comment: "Poetic and evocative" }
+                ]
+            },
+            {
+                id: 104,
+                title: "Island of a Thousand Mirrors",
+                author: "Nayomi Munaweera",
+                genre: "historical",
+                pages: 256,
+                rating: 4.6,
+                cover: "🪞",
+                color: "#FF9800",
+                country: "sri-lanka",
+                synopsis: "A powerful novel about two families on different sides of the Sri Lankan civil war and its impact on their lives.",
+                sequels: [],
+                prequels: [],
+                reviews: [
+                    { user: "Priya S.", rating: 5, comment: "Unforgettable story about the civil war" },
+                    { user: "Michael C.", rating: 4, comment: "Important historical perspective" },
+                    { user: "Nisha R.", rating: 5, comment: "Beautifully written and emotional" }
+                ]
+            },
+            {
+                id: 105,
+                title: "The Hamilton Case",
+                author: "Michelle de Kretser",
+                genre: "mystery",
+                pages: 320,
+                rating: 4.2,
+                cover: "🔍",
+                color: "#607d8b",
+                country: "sri-lanka",
+                synopsis: "A murder mystery set in colonial Ceylon, exploring class, race, and justice in 1930s Sri Lanka.",
+                sequels: [],
+                prequels: [],
+                reviews: [
+                    { user: "Dinesh K.", rating: 4, comment: "Great colonial mystery" },
+                    { user: "Emma L.", rating: 4, comment: "Atmospheric and well-plotted" },
+                    { user: "Rohan M.", rating: 5, comment: "Captures old Ceylon perfectly" }
+                ]
+            },
+            {
+                id: 106,
+                title: "Colombo",
+                author: "Carl Muller",
+                genre: "fiction",
+                pages: 280,
+                rating: 4.1,
+                cover: "🏙️",
+                color: "#FF5722",
+                country: "sri-lanka",
+                synopsis: "A collection of stories about life in Colombo, capturing the spirit of Sri Lanka's capital city.",
+                sequels: ["Colombo: A Novel"],
+                prequels: [],
+                reviews: [
+                    { user: "Sanjay P.", rating: 4, comment: "Funny and authentic" },
+                    { user: "Chamari S.", rating: 5, comment: "Nostalgic trip through Colombo" },
+                    { user: "Tom B.", rating: 4, comment: "Great slice of Sri Lankan life" }
+                ]
+            },
+            {
+                id: 107,
+                title: "Buddhist Legends",
+                author: "Martin Wickramasinghe",
+                genre: "non-fiction",
+                pages: 350,
+                rating: 4.4,
+                cover: "🕉️",
+                color: "#FFC107",
+                country: "sri-lanka",
+                synopsis: "A collection of traditional Buddhist stories and legends from Sri Lanka, beautifully retold.",
+                sequels: [],
+                prequels: [],
+                reviews: [
+                    { user: "Ananda P.", rating: 5, comment: "Essential reading for understanding Sri Lankan culture" },
+                    { user: "Sarah J.", rating: 4, comment: "Beautiful stories" },
+                    { user: "Kumar D.", rating: 5, comment: "Classic Sri Lankan literature" }
+                ]
+            },
+            {
+                id: 108,
+                title: "The Ceaseless Chatter of Demons",
+                author: "Ashok Ferrey",
+                genre: "fiction",
+                pages: 280,
+                rating: 4.0,
+                cover: "😈",
+                color: "#E91E63",
+                country: "sri-lanka",
+                synopsis: "A contemporary novel set in Sri Lanka exploring modern life, spirituality, and personal demons.",
+                sequels: [],
+                prequels: [],
+                reviews: [
+                    { user: "Nimal R.", rating: 4, comment: "Witty and insightful" },
+                    { user: "Lisa M.", rating: 4, comment: "Modern Sri Lankan fiction at its best" },
+                    { user: "David W.", rating: 3, comment: "Interesting perspective" }
+                ]
+            },
+
+            // ========== INTERNATIONAL BOOKS ==========
+            {
+                id: 1,
+                title: "The Great Gatsby",
+                author: "F. Scott Fitzgerald",
+                genre: "classic",
+                pages: 180,
+                rating: 4.2,
+                cover: "📚",
+                color: "#4a90e2",
+                country: "international",
+                synopsis: "A novel about the American Dream through the eyes of Nick Carraway, who observes the lavish lifestyle of his mysterious neighbor, Jay Gatsby.",
+                sequels: [],
+                prequels: [],
+                reviews: [
+                    { user: "John D.", rating: 5, comment: "Timeless classic!" },
+                    { user: "Sarah M.", rating: 4, comment: "Beautiful prose" },
+                    { user: "Mike R.", rating: 4, comment: "A must-read for everyone" }
+                ]
+            },
+            {
+                id: 2,
+                title: "Harry Potter and the Sorcerer's Stone",
+                author: "J.K. Rowling",
+                genre: "fantasy",
+                pages: 309,
+                rating: 4.8,
+                cover: "⚡",
+                color: "#ff6b6b",
+                country: "international",
+                synopsis: "The first book in the Harry Potter series where Harry discovers he is a wizard and begins his journey at Hogwarts.",
+                sequels: ["Chamber of Secrets", "Prisoner of Azkaban", "Goblet of Fire"],
+                prequels: [],
+                reviews: [
+                    { user: "Emma W.", rating: 5, comment: "Magical from start to finish!" },
+                    { user: "Tom R.", rating: 4, comment: "Great start to the series" },
+                    { user: "Sophia L.", rating: 5, comment: "My childhood favorite" }
+                ]
+            },
+            {
+                id: 3,
+                title: "Dune",
+                author: "Frank Herbert",
+                genre: "sci-fi",
+                pages: 412,
+                rating: 4.5,
+                cover: "🌌",
+                color: "#9c27b0",
+                country: "international",
+                synopsis: "Epic science fiction novel set in the distant future amidst a feudal interstellar society.",
+                sequels: ["Dune Messiah", "Children of Dune"],
+                prequels: [],
+                reviews: [
+                    { user: "Alex K.", rating: 5, comment: "Masterpiece of sci-fi" },
+                    { user: "Lisa P.", rating: 4, comment: "Complex but rewarding" },
+                    { user: "David F.", rating: 5, comment: "The best sci-fi ever written" }
+                ]
+            },
+            {
+                id: 4,
+                title: "To Kill a Mockingbird",
+                author: "Harper Lee",
+                genre: "classic",
+                pages: 281,
+                rating: 4.7,
+                cover: "🕊️",
+                color: "#50c878",
+                country: "international",
+                synopsis: "A novel about racial injustice and loss of innocence in the American South.",
+                sequels: [],
+                prequels: [],
+                reviews: [
+                    { user: "Michael B.", rating: 5, comment: "Powerful and moving" },
+                    { user: "Jessica L.", rating: 4, comment: "Important read for everyone" },
+                    { user: "Robert G.", rating: 5, comment: "Changed my perspective" }
+                ]
+            }
+        ];
+
+        let currentCountryFilter = 'all';
+
+        // Display books
+        function displayBooks(books = booksData) {
+            const booksGrid = document.getElementById('booksGrid');
+            booksGrid.innerHTML = '';
+            
+            // Filter by country if needed
+            let filteredBooks = books;
+            if (currentCountryFilter !== 'all') {
+                filteredBooks = books.filter(book => book.country === currentCountryFilter);
+            }
+            
+            filteredBooks.forEach(book => {
+                const bookCard = document.createElement('div');
+                bookCard.className = 'book-card';
+                bookCard.onclick = () => openBookModal(book.id);
+                
+                bookCard.innerHTML = `
+                    <div class="book-cover" style="background: ${book.color};">
+                        <span style="font-size: 4rem;">${book.cover}</span>
+                    </div>
+                    <div class="book-info">
+                        <h3 class="book-title">
+                            ${book.title}
+                            ${book.country === 'sri-lanka' ? '<span class="sri-lankan-badge">🇱🇰</span>' : ''}
+                        </h3>
+                        <p class="book-author">by ${book.author}</p>
+                        <div class="book-meta">
+                            <span class="book-genre">${book.genre.toUpperCase()}</span>
+                            <span class="book-rating">⭐ ${book.rating}</span>
+                        </div>
+                        <p style="font-size: 0.9rem; opacity: 0.9;">${book.pages} pages</p>
+                        <button style="
+                            width: 100%;
+                            padding: 10px;
+                            margin-top: 10px;
+                            background: rgba(255,255,255,0.2);
+                            color: white;
+                            border: none;
+                            border-radius: 8px;
+                            cursor: pointer;
+                            transition: background 0.3s;
+                        " onmouseover="this.style.background='rgba(255,255,255,0.3)'" 
+                        onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                            View Details
+                        </button>
+                    </div>
+                `;
+                
+                booksGrid.appendChild(bookCard);
+            });
+            
+            // Update results count
+            document.getElementById('resultsCount').textContent = 
+                `Showing ${filteredBooks.length} books${currentCountryFilter === 'sri-lanka' ? ' (Sri Lankan)' : 
+                currentCountryFilter === 'international' ? ' (International)' : ''}`;
+        }
+
+        // Filter by country
+        function filterByCountry(country) {
+            currentCountryFilter = country;
+            
+            // Update active button
+            document.querySelectorAll('.country-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            displayBooks();
+        }
+
+        // Filter books
+        function filterBooks() {
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const genreFilter = document.getElementById('genreFilter').value;
+            
+            const filteredBooks = booksData.filter(book => {
+                const matchesSearch = searchInput === '' || 
+                    book.title.toLowerCase().includes(searchInput) || 
+                    book.author.toLowerCase().includes(searchInput);
+                
+                const matchesGenre = genreFilter === '' || book.genre === genreFilter;
+                
+                // Apply country filter
+                const matchesCountry = currentCountryFilter === 'all' || book.country === currentCountryFilter;
+                
+                return matchesSearch && matchesGenre && matchesCountry;
+            });
+            
+            displayBooks(filteredBooks);
+        }
+
+        // Clear filters
+        function clearFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('genreFilter').value = '';
+            currentCountryFilter = 'all';
+            
+            // Reset country buttons
+            document.querySelectorAll('.country-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelectorAll('.country-btn')[0].classList.add('active');
+            
+            displayBooks();
+        }
+
+        // Open book modal
+        function openBookModal(bookId) {
+            const book = booksData.find(b => b.id === bookId);
+            if (!book) return;
+            
+            const modalContent = document.getElementById('modalContent');
+            modalContent.innerHTML = `
+                <h2 class="modal-book-title">${book.title}</h2>
+                <p class="modal-book-author">by ${book.author}</p>
+                
+                <div style="margin: 0.5rem 0;">
+                    ${book.country === 'sri-lanka' ? 
+                        '<span class="sri-lankan-badge" style="font-size: 0.9rem; padding: 5px 12px;">🇱🇰 Sri Lankan Literature</span>' : 
+                        '<span style="background: #e0e0e0; color: #666; padding: 5px 12px; border-radius: 12px; font-size: 0.9rem;">🌍 International</span>'}
+                </div>
+                
+                <div style="display: flex; gap: 1rem; margin: 1.5rem 0; padding: 1rem; background: #f8f9fa; border-radius: 10px;">
+                    <div>
+                        <strong>Genre:</strong> ${book.genre.charAt(0).toUpperCase() + book.genre.slice(1)}
+                    </div>
+                    <div>
+                        <strong>Pages:</strong> ${book.pages}
+                    </div>
+                    <div>
+                        <strong>Rating:</strong> ⭐ ${book.rating}/5
+                    </div>
+                </div>
+                
+                <h3 style="margin: 1.5rem 0 0.5rem 0; color: #2c3e50;">Synopsis</h3>
+                <p style="line-height: 1.6; margin-bottom: 1.5rem;">${book.synopsis}</p>
+                
+                ${book.sequels.length > 0 ? `
+                    <h3 style="margin: 1.5rem 0 0.5rem 0; color: #2c3e50;">Related Books</h3>
+                    <ul style="margin-bottom: 1.5rem; padding-left: 1.5rem;">
+                        ${book.sequels.map(seq => `<li>${seq}</li>`).join('')}
+                    </ul>
+                ` : ''}
+                
+                <h3 style="margin: 1.5rem 0 0.5rem 0; color: #2c3e50;">Reviews</h3>
+                <table class="reviews-table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Rating</th>
+                            <th>Comment</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${book.reviews.map(review => `
+                            <tr>
+                                <td>${review.user}</td>
+                                <td>${'⭐'.repeat(review.rating)}</td>
+                                <td>${review.comment}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+                
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <button onclick="saveToReadingList(${book.id})" style="
+                        flex: 1;
+                        padding: 12px;
+                        background: #4a90e2;
+                        color: white;
+                        border: none;
+                        border-radius: 8px;
+                        font-size: 1rem;
+                        font-weight: bold;
+                        cursor: pointer;
+                        transition: background 0.3s;
+                    ">Add to Reading List</button>
+                    
+                    ${book.country === 'sri-lanka' ? `
+                        <button onclick="showMoreSriLankanBooks()" style="
+                            padding: 12px;
+                            background: #ffb400;
+                            color: white;
+                            border: none;
+                            border-radius: 8px;
+                            font-size: 1rem;
+                            font-weight: bold;
+                            cursor: pointer;
+                            transition: background 0.3s;
+                        ">More Sri Lankan Books</button>
+                    ` : ''}
+                </div>
+            `;
+            
+            document.getElementById('bookModal').style.display = 'flex';
+        }
+
+        // Show more Sri Lankan books
+        function showMoreSriLankanBooks() {
+            closeModal();
+            filterByCountry('sri-lanka');
+            
+            // Scroll to books section
+            document.querySelector('.search-section').scrollIntoView({ behavior: 'smooth' });
+            
+            // Show notification
+            setTimeout(() => {
+                alert("Now showing all Sri Lankan books! 🇱🇰");
+            }, 300);
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('bookModal').style.display = 'none';
+        }
+
+        // Save to reading list
+        function saveToReadingList(bookId) {
+            const book = booksData.find(b => b.id === bookId);
+            if (!book) return;
+            
+            // Get existing reading list
+            let readingList = JSON.parse(localStorage.getItem('readingList')) || [];
+            
+            // Check if already in list
+            const alreadyExists = readingList.some(item => item.id === bookId);
+            
+            if (!alreadyExists) {
+                readingList.push({
+                    id: book.id,
+                    title: book.title,
+                    author: book.author,
+                    genre: book.genre,
+                    country: book.country,
+                    added: new Date().toLocaleDateString()
+                });
+                
+                localStorage.setItem('readingList', JSON.stringify(readingList));
+                alert(`"${book.title}" added to your reading list!`);
+            } else {
+                alert('This book is already in your reading list!');
+            }
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('bookModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            displayBooks();
+            
+            // Add event listeners for real-time search
+            document.getElementById('searchInput').addEventListener('input', filterBooks);
+            document.getElementById('genreFilter').addEventListener('change', filterBooks);
+            
+            console.log('Book Explorer loaded with', booksData.length, 'books');
+            console.log('Sri Lankan books:', booksData.filter(b => b.country === 'sri-lanka').length);
+            console.log('International books:', booksData.filter(b => b.country === 'international').length);
+        });
+    </script>
+</body>
+</html>

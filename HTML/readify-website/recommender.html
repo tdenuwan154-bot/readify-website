@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Recommender - Readify</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        header {
+            background: rgba(255,255,255,0.1);
+            padding: 1rem 0;
+            backdrop-filter: blur(10px);
+        }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+        }
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+        }
+        .nav-links a:hover { background: rgba(255,255,255,0.2); }
+        h1 { text-align: center; padding: 3rem 0; font-size: 3rem; }
+        
+        .card {
+            background: rgba(255,255,255,0.1);
+            padding: 2rem;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            margin: 2rem 0;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-right: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        
+        .recommendation-box {
+            background: rgba(255,255,255,0.2);
+            padding: 2rem;
+            border-radius: 15px;
+            margin: 2rem 0;
+            text-align: center;
+        }
+        
+        .book-title {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .book-author {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+        
+        .book-details {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 1rem 0;
+        }
+        
+        .reading-list {
+            margin-top: 2rem;
+        }
+        
+        .list-item {
+            background: rgba(255,255,255,0.1);
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .bounce {
+            animation: bounce 0.5s;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 3rem 0;
+            margin-top: 4rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <a href="index.html" class="logo">📚 Readify</a>
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="explorer.html">Explorer</a></li>
+                    <li><a href="tracker.html">Tracker</a></li>
+                    <li><a href="recommender.html" style="background: rgba(255,255,255,0.2);">Recommender</a></li>
+                    <li><a href="reading-flow.html">Reading Flow</a></li>
+                    <li><a href="feedback.html">Feedback</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1>🎲 Book Recommender</h1>
+        
+        <div class="card">
+            <h2 style="margin-bottom: 1.5rem;">Your Preferences</h2>
+            
+            <div class="form-group">
+                <label>Genre</label>
+                <select id="genreSelect" class="form-control">
+                    <option value="all">All Genres</option>
+                    <option value="fantasy">Fantasy</option>
+                    <option value="sci-fi">Science Fiction</option>
+                    <option value="mystery">Mystery</option>
+                    <option value="romance">Romance</option>
+                    <option value="classic">Classic</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Book Length</label>
+                <select id="lengthSelect" class="form-control">
+                    <option value="all">Any Length</option>
+                    <option value="short">Short (under 300 pages)</option>
+                    <option value="medium">Medium (300-500 pages)</option>
+                    <option value="long">Long (over 500 pages)</option>
+                </select>
+            </div>
+            
+            <button class="btn" onclick="getRecommendation()">Get Recommendation</button>
+        </div>
+        
+        <!-- Recommendation Display -->
+        <div class="card" id="recommendationCard" style="display: none;">
+            <h2 style="margin-bottom: 1.5rem;">📚 Your Recommendation</h2>
+            
+            <div class="recommendation-box" id="recommendationBox">
+                <div class="book-title" id="recTitle">Book Title</div>
+                <div class="book-author" id="recAuthor">by Author</div>
+                <div class="book-details" id="recDetails">
+                    <span>Genre</span>
+                    <span>000 pages</span>
+                    <span>⭐ 0.0</span>
+                </div>
+                <p id="recDescription">Book description will appear here.</p>
+            </div>
+            
+            <button class="btn" onclick="getRecommendation()" id="pickAgainBtn">🔄 Pick Again</button>
+            <button class="btn" onclick="saveToReadingList()">💾 Save to List</button>
+        </div>
+        
+        <!-- Reading List -->
+        <div class="card">
+            <h2 style="margin-bottom: 1.5rem;">📋 My Reading List</h2>
+            <div id="readingList" class="reading-list"></div>
+            <button class="btn" onclick="clearReadingList()">Clear List</button>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>© 2024 Readify - Find your next favorite book</p>
+        </div>
+    </footer>
+
+    <script>
+        // Book database
+        const books = [
+            { id: 1, title: "Harry Potter", author: "J.K. Rowling", genre: "fantasy", pages: 309, rating: 4.8, description: "A young wizard discovers his magical heritage." },
+            { id: 2, title: "The Hobbit", author: "J.R.R. Tolkien", genre: "fantasy", pages: 310, rating: 4.7, description: "A hobbit goes on an unexpected adventure." },
+            { id: 3, title: "Dune", author: "Frank Herbert", genre: "sci-fi", pages: 412, rating: 4.5, description: "Epic science fiction on a desert planet." },
+            { id: 4, title: "1984", author: "George Orwell", genre: "sci-fi", pages: 328, rating: 4.6, description: "A dystopian novel about totalitarianism." },
+            { id: 5, title: "The Da Vinci Code", author: "Dan Brown", genre: "mystery", pages: 489, rating: 4.0, description: "A mystery thriller about a murder in the Louvre." },
+            { id: 6, title: "Pride and Prejudice", author: "Jane Austen", genre: "romance", pages: 279, rating: 4.4, description: "A classic romance novel." },
+            { id: 7, title: "The Great Gatsby", author: "F. Scott Fitzgerald", genre: "classic", pages: 180, rating: 4.2, description: "The American Dream in the Jazz Age." },
+            { id: 8, title: "To Kill a Mockingbird", author: "Harper Lee", genre: "classic", pages: 281, rating: 4.7, description: "A novel about racial injustice." },
+            // Sri Lankan books
+            { id: 9, title: "The Village in the Jungle", author: "Leonard Woolf", genre: "classic", pages: 256, rating: 4.5, description: "Life in a remote Sri Lankan village." },
+            { id: 10, title: "Funny Boy", author: "Shyam Selvadurai", genre: "fiction", pages: 320, rating: 4.7, description: "A coming-of-age story in Sri Lanka." },
+            { id: 11, title: "Reef", author: "Romesh Gunesekera", genre: "fiction", pages: 240, rating: 4.3, description: "A journey from Sri Lanka to London." },
+            { id: 12, title: "Island of a Thousand Mirrors", author: "Nayomi Munaweera", genre: "historical", pages: 256, rating: 4.6, description: "Sri Lankan civil war story." }
+        ];
+
+        let currentRecommendation = null;
+
+        // Get recommendation based on filters
+        function getRecommendation() {
+            const genre = document.getElementById('genreSelect').value;
+            const length = document.getElementById('lengthSelect').value;
+            
+            // Filter books
+            let filtered = books.filter(book => {
+                if (genre !== 'all' && book.genre !== genre) return false;
+                
+                if (length === 'short' && book.pages >= 300) return false;
+                if (length === 'medium' && (book.pages < 300 || book.pages > 500)) return false;
+                if (length === 'long' && book.pages <= 500) return false;
+                
+                return true;
+            });
+            
+            if (filtered.length === 0) {
+                alert("No books match your criteria. Try different preferences!");
+                filtered = books; // Fallback to all books
+            }
+            
+            // Random selection
+            const randomIndex = Math.floor(Math.random() * filtered.length);
+            currentRecommendation = filtered[randomIndex];
+            
+            // Display recommendation
+            document.getElementById('recTitle').textContent = currentRecommendation.title;
+            document.getElementById('recAuthor').textContent = `by ${currentRecommendation.author}`;
+            document.getElementById('recDetails').innerHTML = `
+                <span>${currentRecommendation.genre}</span>
+                <span>${currentRecommendation.pages} pages</span>
+                <span>⭐ ${currentRecommendation.rating}</span>
+            `;
+            document.getElementById('recDescription').textContent = currentRecommendation.description;
+            
+            // Show recommendation card
+            document.getElementById('recommendationCard').style.display = 'block';
+            
+            // Add bounce animation to pick again button
+            document.getElementById('pickAgainBtn').classList.add('bounce');
+            setTimeout(() => {
+                document.getElementById('pickAgainBtn').classList.remove('bounce');
+            }, 500);
+        }
+
+        // Save to reading list
+        function saveToReadingList() {
+            if (!currentRecommendation) {
+                alert("Get a recommendation first!");
+                return;
+            }
+            
+            let readingList = JSON.parse(localStorage.getItem('readingList')) || [];
+            
+            // Check if already in list
+            const exists = readingList.some(book => book.id === currentRecommendation.id);
+            
+            if (!exists) {
+                readingList.push({
+                    id: currentRecommendation.id,
+                    title: currentRecommendation.title,
+                    author: currentRecommendation.author,
+                    genre: currentRecommendation.genre,
+                    saved: new Date().toLocaleDateString()
+                });
+                
+                localStorage.setItem('readingList', JSON.stringify(readingList));
+                alert(`"${currentRecommendation.title}" added to your reading list!`);
+                displayReadingList();
+            } else {
+                alert("This book is already in your reading list!");
+            }
+        }
+
+        // Display reading list
+        function displayReadingList() {
+            const readingList = JSON.parse(localStorage.getItem('readingList')) || [];
+            const container = document.getElementById('readingList');
+            
+            if (readingList.length === 0) {
+                container.innerHTML = '<p style="text-align: center; opacity: 0.7;">Your reading list is empty</p>';
+                return;
+            }
+            
+            let html = '';
+            readingList.reverse().forEach((book, index) => {
+                html += `
+                    <div class="list-item">
+                        <div>
+                            <strong>${book.title}</strong><br>
+                            by ${book.author} • ${book.genre}<br>
+                            <small>Added: ${book.saved}</small>
+                        </div>
+                        <div>
+                            <button class="btn" onclick="removeFromList(${index})" style="background: #ff6b6b; color: white;">Remove</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // Remove from list
+        function removeFromList(index) {
+            let readingList = JSON.parse(localStorage.getItem('readingList')) || [];
+            readingList.splice(index, 1);
+            localStorage.setItem('readingList', JSON.stringify(readingList));
+            displayReadingList();
+        }
+
+        // Clear all list
+        function clearReadingList() {
+            if (confirm("Clear your entire reading list?")) {
+                localStorage.removeItem('readingList');
+                displayReadingList();
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', displayReadingList);
+    </script>
+</body>
+</html>
